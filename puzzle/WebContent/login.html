@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- Popper JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<meta charset="UTF-8">
+<title>Login</title>
+</head>
+<body>
+	<h1>🔒Login</h1>
+	<table>
+		<tr>
+			<td>member ID :</td>
+			<td><input id="memberId" type="text"></td>
+		</tr>
+		<tr>
+			<td>member PW :</td>
+			<td><input id="memberPw" type="password"></td>
+		</tr>
+	</table>
+	<div><button id="loginBtn" class="btn btn-secondary">🔒Login !</button>
+	<button id="index" class="btn btn-secondary">👣Index !</button></div>
+</body>
+	<script src="/jquery-ex/scripts/jquery-3.4.1.min.js"></script>
+<script>
+	$("#loginBtn").click(function(){
+		$.ajax({
+			url : "/puzzle/Login",
+			method :"post",
+			data : {"memberId" : $("#memberId").val() , "memberPw" : $("#memberPw").val()},
+			success : function() {
+					console.log("test...");
+					location.href = "/puzzle/Puzzle.html";
+					return false;
+			}
+			
+			});
+			
+		});
+	$("#index").click(function(){
+		location.href="/puzzle/Index.html";
+	})
+</script>
+</html>

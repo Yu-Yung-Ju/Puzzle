@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- Popper JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<style>
+
+	.successPic {
+		opacity : 1;
+	}
+
+	table, td{
+		border: 1px solid gray;
+	}
+	table{
+		border-collapse: collapse;
+	}
+
+	body { font-family: sans-serif; }
+
+	.cards {
+	    width: 200px;
+	    height: 200px;
+	    position: relative;
+	    border: 1px solid #ccc;
+	    -webkit-perspective: 800px;
+	    -moz-perspective: 800px;
+	    -o-perspective: 800px;
+	    perspective: 800px;
+	}
+	.card {
+		cursor:pointer;
+	    width: 100%;
+	    height: 100%;
+	    position: absolute;
+	    -webkit-transition: -webkit-transform 1s;
+	    -moz-transition: -moz-transform 1s;
+	    -o-transition: -o-transform 1s;
+	    transition: transform 1s;
+	    -webkit-transform-style: preserve-3d;
+	    -moz-transform-style: preserve-3d;
+	    -o-transform-style: preserve-3d;
+	    transform-style: preserve-3d;
+	    -webkit-transform-origin: 50% 50%;
+	}
+	.card div {
+	    display: block;
+	    height: 100%;
+	    width: 100%;
+	    text-align: center;
+	    font-weight: bold;
+	    font-size: 140px;
+	    position: absolute;
+	    -webkit-backface-visibility: hidden;
+	    -moz-backface-visibility: hidden;
+	    -o-backface-visibility: hidden;
+	    backface-visibility: hidden;
+	}
+	
+	.card .back {
+	    background: grey;
+	    -webkit-transform: rotateY( 180deg );
+	    -moz-transform: rotateY( 180deg );
+	    -o-transform: rotateY( 180deg );
+	    transform: rotateY( 180deg );
+	}
+	.card.flipped {
+	    -webkit-transform: rotateY( 180deg );
+	    -moz-transform: rotateY( 180deg );
+	    -o-transform: rotateY( 180deg );
+	    transform: rotateY( 180deg );
+	}
+</style>
+<meta charset="UTF-8">
+<title>Puzzle</title>
+<script src = "/jquery-ex/scripts/jquery-3.4.1.min.js"></script>
+</head>
+<body>	
+	<h1 align="center">🃏Puzzle Game♠️</h1>
+	<div><button id ="index" class="btn btn-secondary">👣Main Index!</button>
+	<button type="button" id= "hintBtn" class="btn btn-secondary">🔎Hint</button></div>
+	<h2>Player Name : <span id="LoginState"></span></h2>
+	<h2>Time : <span id="timer"> 0</span></h2>
+	
+	<button type="button" id="logoutBtn" class="btn btn-secondary">🔌LogOut</button>
+	<table id="border">
+
+	</table>
+</body>
+<script>
+	let total = 0;  //전체 클릭 횟수
+	let state = 0; 	// 0 or 1 or 2
+	
+	let stage = 1;  //처음 스테이지 값
+	
+	//로그아웃
+	$("#logoutBtn").click(function(){
+		$.ajax({
+			url : "/puzzle/Logout",
+			method : "post",
+			success : function(){
+				console.log("로그아웃");
+				location.href = "/puzzle/login.html";
+			}
+		})
+	})
+	
+	//stage1 = model1 , stage2 = model2 , stage3= model3
+	
+ 	
+// 	console.log("model length"+ model.length); 
+
+	let model1 = ["p0.png","p0.png",
+				  "p1.png","p1.png",
+				  "p2.png","p2.png",
+				  "p3.png","p3.png"
+									];
+		
+		
+	let model2 = ["p0.png","p0.png",
+				  "p1.png","p1.png",
+			  	  "p2.png","p2.png",
+		  		  "p3.png","p3.png",
+				  "p4.png","p4.png",
+				  "p5.png","p5.png",
+				  "p6.png","p6.png",
+				  "p7.png","p7.png",
+				  "p8.png","p8.png",
+				  "p9.png","p9.png"
+									];
+		
+		
+
+	let model3= ["p0.png","p0.png",
+				"p1.png","p1.png",
+				"p2.png","p2.png",
+				"p3.png","p3.png",
+				"p4.png","p4.png",
+				"p5.png","p5.png",
+				"p6.png","p6.png",
+				"p7.png","p7.png",
+				"p8.png","p8.png",
+				"p9.png","p9.png",
+				"p10.png","p10.png",
+				"p11.png","p11.png",
+				"p12.png","p12.png",
+				"p13.png","p13.png",
+				"p14.png","p14.png",
+				"p15.png","p15.png",
+				"p16.png","p16.png",
+				"p17.png","p17.png"
+				];
+	$(document).ready(function(){
+		
+		model = model1;
+		let loginState = null;
+		//sessionInfo값을 동기로 요청
+		$.ajax({
+			url :"/puzzle/GetSessionInfo",
+			method :"post",
+			async : false, // 동기요청
+			success : function(json){
+				loginState = json;
+				console.log("loginState : "+ loginState)
+			}
+		})
+		if(loginState === null){
+			location.href = "/puzzle/login.html";
+			return false;
+		}
+		
+		//인덱스 홈
+		$("#index").click(function(){
+			location.href ="/puzzle/Index.html";
+		});
+		
+ 		//상단 로그인 정보 표시
+ 		$("#LoginState").text(loginState);
+ 		
+ 		//타이머
+ 		let timerNum = 0;
+ 		timer = setInterval(function(){
+ 			timerNum++;
+ 			$("#timer").text(timerNum);
+ 		}, 1000);
+ 			
+		
+//--------------------------------------------------------------------------------------------------------------게임관련---------------------------------------------------------------------------------------------
+		
+ 	//힌트    
+//  		let hintx = 0;
+// 		$("#hintBtn").click(function(){
+// 			alert ("게임중 세번 사용할 수 있습니다.");
+// 			if(hintx >= 3){ //힌트버튼을 2번이상 클릭 한 경우 버튼 숨김
+// 				$("#hintBtn").hide();
+// 			}else{
+// 				$(".pic").each(function(){
+// 					$(this).animate({opacity:0.5},2000);  
+// 					$(this).animate({opacity:0.01},2000);
+					
+// 					hintx ++;
+// 					console.log("hint x :"+hintx);
+// 				});
+				
+// 			}
+// 		});
+	//힌트
+	let hintCount = 0; //힌트는 게임중 총 3번 가능
+	$("#hintBtn").click(function(){
+		if( $(".pic").not(".successPic").css({opacity:"1"}) ){
+			$(".pic").animate({opacity : 0.1}, 3000);
+		}
+		if(hintCount <3){
+			console.log("hintCount", hintCount);
+			$(".pic").each(function(){
+				$(this).animate({opacity : 0.1}, 3000); //0.1의 투명도로 3초동안 출력
+			});
+		hintCount ++;
+		}
+	});
+
+
+		
+		
+		//모델 셔플
+		for(let i=0; i<100000; i++) {
+			let ran = Math.floor(Math.random()*model.length);
+			let tmp = model[0];
+			model[0] = model[ran];
+ 			model[ran] = tmp;
+ 		}
+		
+ 		//모델 출력 
+ 		$("#border").empty();
+ 		$(model).each(function(index, item){
+ 			//oncontextmenu = return false; 우클릭 방지
+		//ondragstart = return false; 드래그 방지
+			
+			if(index%6==0 || index==0){
+				$("#border").append("<tr>");
+			}
+			$("#border").append("<td oncontextmenu = 'return false' ondragstart = 'return false'><input class='pic successPic' type='image' src='/puzzle/images/"+item+"'></td>");
+			if(index%6==0 || index==0){
+				$("#border").append("</tr>");
+			}
+
+		});
+ 		//모델 하이드
+		$(".pic").each(function(){
+			$(this).animate({opacity:0.01},1000); //드래그 버그 <우클릭 방지>
+		});
+		
+		 //------------플립기능-----------------------------------------------------
+		   $(".card").click(function(){
+				$(this).toggleClass("flipped");
+			});
+		//---------------3초 후 강제 플립(뒤집기)-----------------------------
+		setTimeout(function() {
+			$(".card").each(function(){
+				$(this).toggleClass("flipped");
+			})
+		}, 3000);
+		
+		//게임 변수 설정
+		let success = 0; //성공 횟수(그림 맞춘 횟수)
+		let onePic = null; //첫번째 클릭
+		let twoPic = null; //두번째 클릭
+
+		$(document).on("click",".pic", function(){
+			console.log("--click--");
+			console.log("stage:", stage);
+			console.log("total : ", total);
+			//console.log($(this).attr("src"));
+			total++;
+			state++;
+			$(this).attr("disabled",true); //더블클릭 방지를 위해 클릭 막음			
+			if(1 == state){
+				$(this).animate({opacity:1},2);
+				onePic = $(this); //원픽에 내가 선택한 태그 저장
+				console.log("tate : 1");
+			}else if(2 == state){
+				$(this).animate({opacity:1},2);
+				twoPic = $(this);
+				console.log("tate : 2");
+				if($(onePic).attr("src") == $(twoPic).attr("src")) {
+					success++;
+				console.log("success : ", success);
+				
+				$(onePic).removeClass("pic");
+				$(twoPic).removeClass("pic");
+				if(success == model.length/2) {
+					//스테이지 관련
+					console.log("스테이지 종료 시간("+timerNum+"), 횟수("+total+")" );
+					stage ++;
+					success = 0;
+					if(stage < 4) {  
+						if(stage ==2){
+							model = model2;
+						}else if(stage ==3){
+							model = model3;
+						}
+					console.log("model length"+ model.length);
+					
+					//모델 셔플
+					for(let i=0; i<100000; i++) {
+						let ran = Math.floor(Math.random()*model.length);
+						let tmp = model[0];
+						model[0] = model[ran];
+						model[ran] = tmp;
+					}
+					
+					//모델 출력 
+					$("#border").empty();
+					$(model).each(function(index, item){
+						//oncontextmenu = return false; 우클릭 방지
+						//ondragstart = return false; 드래그 방지
+						
+						if(index%6==0 || index==0){
+							$("#border").append("<tr>");
+						}
+						$("#border").append("<td oncontextmenu = 'return false' ondragstart = 'return false'><input class='pic' type='image' src='/puzzle/images/"+item+"'></td>");
+						if(index%6==0 || index==0){
+							$("#border").append("</tr>");
+						}
+
+					});	
+					
+					//모델 하이드
+					$(".pic").each(function(){
+						$(this).animate({opacity:0.01},3000); //드래그 버그 <우클릭 방지>
+					});
+					
+				}else{
+					$.ajax({
+						url:"/puzzle/AddReport",
+						method :"post",
+						data :{"timer" : timerNum, "count" : total},
+					});
+					alert("Clear Time : ("+timerNum +"), Click Count : ("+total+")");
+					stage ++; //스테이지
+					clearInterval(timer); //타이머 종료
+					console.log("게임종료");
+					//서버로 최종결과 전송 , 랭킹 리스트 html로 이동
+					return;			
+				}
+				
+				}
+				}else{
+					$(onePic).animate({"opacity":0.01},500);
+					$(twoPic).animate({"opacity":0.01},500);
+					$(onePic).attr("disabled",false);
+					$(twoPic).attr("disabled",false);
+				}
+				state = 0;
+		
+	}
+	});
+	});
+</script>
+</html>

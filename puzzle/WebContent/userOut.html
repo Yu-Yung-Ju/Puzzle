@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- Popper JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="/puzzle/scripts/jquery-3.4.1.min.js"></script>
+<meta charset="UTF-8">
+<title>Out Of Members</title>
+</head>
+<body>
+	<h1>Out Of Members</h1>
+	<div><h2>Name : <span id="loginState"></span></h2></div>
+	<table>
+		<tr>
+			<td>Member ID:</td>
+			<td><input type="text" id="memberId" readonly="readonly"></td>
+		</tr>
+		<tr>
+			<td>Member PW:</td>
+			<td><input type="text" id="memberPw"></td>
+		</tr>
+	</table>
+	<button id="deleteBtn" class="btn btn-secondary">Delete Members</button>
+</body>
+<script>
+	$(document).ready(function(){
+//--------------------------------------------------------------------------------------------------------------세션------------------------------------------------------------------------------------------------------
+
+	let loginState = null;
+		//sessionInfo값을 동기로 요청
+		$.ajax({
+			url : "/puzzle/GetSessionInfo",
+			method : "post",
+			async : false, // 동기요청
+			success : function(json) {
+				loginState = json;
+				console.log("loginState : " + loginState)
+			}
+		});
+		
+		$("#loginState").text(loginState);
+		$("#memberId").val(loginState);
+	
+		$("#deleteBtn").click(function() {
+			$.ajax({
+				url : "/puzzle/OutOfMembers",
+				method : "post",
+				data :{"memberId" : $("#memberId").val() , "memberPw" : $("#memberPw").val()},
+				success : function(json) {
+					if (json == 1) {
+						$.ajax({
+							url : "/puzzle/Logout",
+							method : "POST",
+							success : function() {
+								alert("[Now, you are not our puzzle member ! ]");
+								location.href = "/puzzle/Index.html";
+							}
+						});
+					}
+					else {
+						location.href = "/puzzle/userOut.html";
+						alert("Missing Match ! Wrong Member Id , Pw [Try Again]");
+					}
+				}
+			})
+		});
+
+	});
+</script>
+</html>

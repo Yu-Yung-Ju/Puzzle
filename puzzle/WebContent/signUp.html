@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- Popper JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<meta charset="UTF-8">
+<title>signUp</title>
+</head>
+<script src = "/jquery-ex/scripts/jquery-3.4.1.min.js"></script>
+<body>
+
+	<h1>회 원 가 입</h1>
+	<div>
+		Member ID:
+		<input type = "text" id = "memberId">
+	</div>
+	<div>
+		Member PW:
+		<input type = "text" id = "memberPw">	
+	
+	</div>
+	<button type="button" id="addBtn" class="btn btn-secondary">Join</button>
+	
+</body>
+<script>
+	$("#addBtn").click(function(){
+		$.ajax({
+			url :"/puzzle/AddMember",
+			method :"post",
+			data : {"memberId" : $("#memberId").val() , "memberPw" : $("#memberPw").val()},
+			success : function() {
+				alert("정상적으로 완료되었습니다. 로그인 해주세요!");
+				location.href = "/puzzle/login.html";
+			}
+		})
+	})
+</script>
+</html>

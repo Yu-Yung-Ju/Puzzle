@@ -1,0 +1,27 @@
+@charset "UTF-8";
+div {
+	Float: left;
+	height: 245px;
+	text-align: left;
+	border : solid #000000 3px;
+	
+}
+
+#header {
+	width: 100%;
+	border: 0px;
+	height: 50;
+}
+
+#main {
+	background-color : gray;
+	height: 190px;
+}
+
+.discount{
+	border : solid #00FF00 3px;
+	
+}
+.no_discount{
+	border : solid #FF0000 3px;
+}

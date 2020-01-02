@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- Popper JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<meta charset="UTF-8">
+<title>Edit Member</title>
+</head>
+<script src="/puzzle/scripts/jquery-3.4.1.min.js"></script>
+<body>
+	<h1> Edit Member Password </h1>
+	<div><h2>Name : <span id="loginState"></span></h2></div>
+	<table>
+		<tr>
+			<td>Member ID:</td>
+			<td><input type="text" id="memberId" readonly="readonly"></td>
+		</tr>
+		<tr>
+			<td>Member PW:</td>
+			<td><input type="text" id="memberPw"></td>
+		</tr>
+		<tr>
+			<td>Change Member PW:</td>
+			<td><input type="text" id="changePw"></td>
+		</tr>
+	</table>
+	<button id="editBtn" class="btn btn-secondary">Edit Confirm</button>
+</body>
+<script>
+	$(document).ready(function(){
+
+	let loginState = null;
+	//sessionInfo값을 동기로 요청
+	$.ajax({
+		url : "/puzzle/GetSessionInfo",
+		method : "post",
+		async : false, // 동기요청
+		success : function(json) {
+			loginState = json;
+			console.log("loginState : " + loginState)
+		}
+	});
+	
+	$("#loginState").text(loginState);
+	$("#memberId").val(loginState);
+
+	$("#editBtn").click(function(){
+			$.ajax({
+				url :"/puzzle/EditMember",
+				method :"post",
+				data :{"memberId" : $("#memberId").val() , "memberPw" : $("#memberPw").val() , "changePw" : $("#changePw").val()},
+				success :function(json){
+					if(json == 1){
+					alert("Now, You Change Password.");
+					location.href= "/puzzle/Index.html";
+				}else{
+					alert("Not Match Your Id , Pw !");
+					location.href ="/puzzle/editMember.html";
+				}
+				}
+			});
+		});
+	});
+</script>
+</html>
